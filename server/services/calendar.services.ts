@@ -25,6 +25,10 @@ export async function getCalendarEvents({
 		`${process.env.USER}:${process.env.PASSWORD}`,
 	).toString("base64");
 
+  console.log(process.env.PASSWORD)
+  console.log(process.env.USER)
+  console.log(process.env.URL)
+
 	const client = await createDAVClient({
 		serverUrl: process.env.URL!,
 		credentials: {
