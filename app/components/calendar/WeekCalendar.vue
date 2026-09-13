@@ -204,16 +204,16 @@
 			</button>
 
 			<div class="flex items-center gap-1.5 sm:gap-3">
-				<span class="text-neutral-300 sm:block">
+				<span v-if="!error" class="text-neutral-300 sm:block">
 					Kalenderwoche:
 					{{ calendarWeek }}
 				</span>
 
-				<span v-if="loading" class="hidden text-xs text-neutral-500 sm:block">
+				<span v-if="loading" class="text-xs text-neutral-500 sm:block">
 					Lade Kalender...
 				</span>
 
-				<span v-if="error" class="hidden text-xs text-red-400 sm:block">
+				<span v-if="error && !loading" class="text-xs text-red-400 sm:block">
 					Kalender konnte nicht geladen werden.
 				</span>
 			</div>
