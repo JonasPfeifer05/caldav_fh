@@ -1,328 +1,323 @@
 <script setup lang="ts">
-	import { getISOWeek } from "date-fns";
-	import { calendarConfig } from "~/config/calendar";
-	import type { CalendarSegment } from "~/types/calendar";
+import {getISOWeek} from "date-fns";
+import {calendarConfig} from "~/config/calendar";
+import type {CalendarSegment} from "~/types/calendar";
 
-	const {
-		generateSegments,
-		getSegmentHeight,
-		getEventPosition,
-		splitEventBySegments,
-	} = useCalendar(calendarConfig);
+const {
+  generateSegments,
+  getSegmentHeight,
+  getEventPosition,
+  splitEventBySegments,
+} = useCalendar(calendarConfig);
 
-	const { events, loading, error, fetchEvents } = useCalendarEvents();
+const getCurrentCalendarWeek = () => {
+  const date = new Date();
 
-	const segments = computed(() => {
-		return generateSegments();
-	});
+  const day = date.getDay();
 
-	const getCurrentCalendarWeek = () => {
-		const date = new Date();
+  if (day === 6) {
+    date.setDate(date.getDate() + 2);
+  } else if (day === 0) {
+    date.setDate(date.getDate() + 1);
+  } else {
+    const mondayOffset = 1 - day;
 
-		const day = date.getDay();
+    date.setDate(date.getDate() + mondayOffset);
+  }
 
-		if (day === 6) {
-			date.setDate(date.getDate() + 2);
-		} else if (day === 0) {
-			date.setDate(date.getDate() + 1);
-		} else {
-			const mondayOffset = 1 - day;
+  date.setHours(0, 0, 0, 0);
 
-			date.setDate(date.getDate() + mondayOffset);
-		}
+  return date;
+};
 
-		date.setHours(0, 0, 0, 0);
+const currentWeek = ref(getCurrentCalendarWeek());
 
-		return date;
-	};
+const {
+  events,
+  loading,
+  error,
+} = useCalendarEvents(currentWeek);
 
-	const currentWeek = ref(getCurrentCalendarWeek());
+const segments = computed(() => {
+  return generateSegments();
+});
 
-	const days = computed(() => {
-		const result: Date[] = [];
 
-		for (let i = 0; i < 5; i++) {
-			const date = new Date(currentWeek.value);
+const days = computed(() => {
+  const result: Date[] = [];
 
-			date.setDate(currentWeek.value.getDate() + i);
+  for (let i = 0; i < 5; i++) {
+    const date = new Date(currentWeek.value);
 
-			result.push(date);
-		}
+    date.setDate(currentWeek.value.getDate() + i);
 
-		return result;
-	});
+    result.push(date);
+  }
 
-	const dateKey = (date: Date) => {
-		const year = date.getFullYear();
+  return result;
+});
 
-		const month = String(date.getMonth() + 1).padStart(2, "0");
+const dateKey = (date: Date) => {
+  const year = date.getFullYear();
 
-		const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
 
-		return `${year}-${month}-${day}`;
-	};
+  const day = String(date.getDate()).padStart(2, "0");
 
-	const formatDay = (date: Date) => {
-		return date.toLocaleDateString("de-AT", {
-			weekday: "long",
-		});
-	};
+  return `${year}-${month}-${day}`;
+};
 
-	const formatDayShort = (date: Date) => {
-		const value = date.toLocaleDateString("de-AT", {
-			weekday: "short",
-		});
+const formatDay = (date: Date) => {
+  return date.toLocaleDateString("de-AT", {
+    weekday: "long",
+  });
+};
 
-		return value.endsWith(".") ? value : `${value}.`;
-	};
+const formatDayShort = (date: Date) => {
+  const value = date.toLocaleDateString("de-AT", {
+    weekday: "short",
+  });
 
-	const formatDate = (date: Date) => {
-		return date.toLocaleDateString("de-AT", {
-			day: "2-digit",
-			month: "2-digit",
-			year: "numeric",
-		});
-	};
+  return value.endsWith(".") ? value : `${value}.`;
+};
 
-	const formatMonth = (date: Date) => {
-		const value = date.toLocaleDateString("de-AT", {
-			month: "short",
-		});
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("de-AT", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
 
-		return value.endsWith(".") ? value : `${value}.`;
-	};
+const formatMonth = (date: Date) => {
+  const value = date.toLocaleDateString("de-AT", {
+    month: "short",
+  });
 
-	const calendarWeek = computed(() => {
-		return getISOWeek(currentWeek.value);
-	});
+  return value.endsWith(".") ? value : `${value}.`;
+};
 
-	const getEventsForDay = (date: Date) => {
-		const key = dateKey(date);
+const calendarWeek = computed(() => {
+  return getISOWeek(currentWeek.value);
+});
 
-		return events.value.filter((event) => event.date === key);
-	};
+const getEventsForDay = (date: Date) => {
+  const key = dateKey(date);
 
-	const previousWeek = () => {
-		const date = new Date(currentWeek.value);
+  return events.value.filter((event) => event.date === key);
+};
 
-		date.setDate(date.getDate() - 7);
+const previousWeek = () => {
+  const date = new Date(currentWeek.value);
 
-		currentWeek.value = date;
-	};
+  date.setDate(date.getDate() - 7);
 
-	const nextWeek = () => {
-		const date = new Date(currentWeek.value);
+  currentWeek.value = date;
+};
 
-		date.setDate(date.getDate() + 7);
+const nextWeek = () => {
+  const date = new Date(currentWeek.value);
 
-		currentWeek.value = date;
-	};
+  date.setDate(date.getDate() + 7);
 
-	const calendarBody = ref<HTMLElement | null>(null);
+  currentWeek.value = date;
+};
 
-	const timeColumn = ref<HTMLElement | null>(null);
+const calendarBody = ref<HTMLElement | null>(null);
 
-	const dayWidth = ref(0);
+const timeColumn = ref<HTMLElement | null>(null);
 
-	let resizeObserver: ResizeObserver | null = null;
+const dayWidth = ref(0);
 
-	const isMobile = ref(false);
+let resizeObserver: ResizeObserver | null = null;
 
-	const updateMobileState = () => {
-		isMobile.value = window.innerWidth < 640;
-	};
+const isMobile = ref(false);
 
-	const updateDayWidth = () => {
-		if (!calendarBody.value || !timeColumn.value) {
-			return;
-		}
+const updateMobileState = () => {
+  isMobile.value = window.innerWidth < 640;
+};
 
-		const totalWidth = calendarBody.value.getBoundingClientRect().width;
+const updateDayWidth = () => {
+  if (!calendarBody.value || !timeColumn.value) {
+    return;
+  }
 
-		const timeWidth = timeColumn.value.getBoundingClientRect().width;
+  const totalWidth = calendarBody.value.getBoundingClientRect().width;
 
-		const width = (totalWidth - timeWidth) / 5;
+  const timeWidth = timeColumn.value.getBoundingClientRect().width;
 
-		if (width > 0) {
-			dayWidth.value = width;
-		}
-	};
+  const width = (totalWidth - timeWidth) / 5;
 
-	const getResponsiveSegmentHeight = (segment: CalendarSegment) => {
-		if (isMobile.value && segment.type === "lesson" && dayWidth.value > 0) {
-			return dayWidth.value;
-		}
+  if (width > 0) {
+    dayWidth.value = width;
+  }
+};
 
-		return getSegmentHeight(segment);
-	};
+const getResponsiveSegmentHeight = (segment: CalendarSegment) => {
+  if (isMobile.value && segment.type === "lesson" && dayWidth.value > 0) {
+    return dayWidth.value;
+  }
 
-	const getResponsiveEventPosition = (
-		start: string,
-		end: string,
-		segments: CalendarSegment[],
-	) => {
-		return getEventPosition(start, end, segments, getResponsiveSegmentHeight);
-	};
+  return getSegmentHeight(segment);
+};
 
-	onMounted(() => {
-		updateMobileState();
-		updateDayWidth();
+const getResponsiveEventPosition = (
+  start: string,
+  end: string,
+  segments: CalendarSegment[],
+) => {
+  return getEventPosition(start, end, segments, getResponsiveSegmentHeight);
+};
 
-		window.addEventListener("resize", updateMobileState);
+onMounted(() => {
+  updateMobileState();
+  updateDayWidth();
 
-		resizeObserver = new ResizeObserver(() => {
-			updateDayWidth();
-		});
+  window.addEventListener("resize", updateMobileState);
 
-		if (calendarBody.value) {
-			resizeObserver.observe(calendarBody.value);
-		}
+  resizeObserver = new ResizeObserver(() => {
+    updateDayWidth();
+  });
 
-		if (timeColumn.value) {
-			resizeObserver.observe(timeColumn.value);
-		}
-	});
+  if (calendarBody.value) {
+    resizeObserver.observe(calendarBody.value);
+  }
 
-	onBeforeUnmount(() => {
-		resizeObserver?.disconnect();
+  if (timeColumn.value) {
+    resizeObserver.observe(timeColumn.value);
+  }
+});
 
-		window.removeEventListener("resize", updateMobileState);
-	});
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
 
-	watch(
-		currentWeek,
-		(week) => {
-			fetchEvents(week);
-		},
-		{
-			immediate: true,
-		},
-	);
+  window.removeEventListener("resize", updateMobileState);
+});
 </script>
 
 <template>
-	<div class="flex flex-col overflow-hidden bg-[#242829]">
-		<div
-			class="flex items-center justify-between border-b border-neutral-700 px-2 py-1.5 sm:px-3 sm:py-2 max-h-[5vh]"
-		>
-			<button
-				type="button"
-				class="rounded-md px-2 py-1 text-sm text-neutral-300 transition hover:bg-neutral-700 hover:text-white sm:px-3 sm:py-1.5"
-				@click="previousWeek"
-			>
-				←
-			</button>
+  <div class="flex flex-col overflow-hidden bg-[#242829]">
+    <div
+      class="flex items-center justify-between border-b border-neutral-700 px-2 py-1.5 sm:px-3 sm:py-2 max-h-[5vh]"
+    >
+      <button
+        type="button"
+        class="rounded-md px-2 py-1 text-sm text-neutral-300 transition hover:bg-neutral-700 hover:text-white sm:px-3 sm:py-1.5"
+        @click="previousWeek"
+      >
+        ←
+      </button>
 
-			<div class="flex items-center gap-1.5 sm:gap-3">
+      <div class="flex items-center gap-1.5 sm:gap-3">
 				<span class="text-neutral-300 sm:block">
 					Kalenderwoche:
 					{{ calendarWeek }}
 				</span>
 
-				<span v-if="loading" class="hidden text-xs text-neutral-500 sm:block">
+        <span v-if="loading" class="hidden text-xs text-neutral-500 sm:block">
 					Lade Kalender...
 				</span>
 
-				<span v-if="error" class="hidden text-xs text-red-400 sm:block">
+        <span v-if="error" class="hidden text-xs text-red-400 sm:block">
 					Kalender konnte nicht geladen werden.
 				</span>
-			</div>
+      </div>
 
-			<button
-				type="button"
-				class="rounded-md px-2 py-1 text-sm text-neutral-300 transition hover:bg-neutral-700 hover:text-white sm:px-3 sm:py-1.5"
-				@click="nextWeek"
-			>
-				→
-			</button>
-		</div>
+      <button
+        type="button"
+        class="rounded-md px-2 py-1 text-sm text-neutral-300 transition hover:bg-neutral-700 hover:text-white sm:px-3 sm:py-1.5"
+        @click="nextWeek"
+      >
+        →
+      </button>
+    </div>
 
-		<div class="overflow-x-auto overflow-y-auto max-h-[95vh]">
-			<div class="min-w-0 sm:min-w-262.5">
-				<div
-					class="sticky top-0 z-30 bg-[#242829] grid grid-cols-[52px_repeat(5,minmax(0,1fr))] border-b border-neutral-700 sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
-				>
-					<div
-						class="flex items-center justify-center border-neutral-700 font-medium text-neutral-400"
-					>
-						{{ formatMonth(currentWeek) }}
-					</div>
+    <div class="overflow-x-auto overflow-y-auto max-h-[95vh]">
+      <div class="min-w-0 sm:min-w-262.5">
+        <div
+          class="sticky top-0 z-30 bg-[#242829] grid grid-cols-[52px_repeat(5,minmax(0,1fr))] border-b border-neutral-700 sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
+        >
+          <div
+            class="flex items-center justify-center border-neutral-700 font-medium text-neutral-400"
+          >
+            {{ formatMonth(currentWeek) }}
+          </div>
 
-					<div
-						v-for="day in days"
-						:key="dateKey(day)"
-						class="border-l border-neutral-700 text-center py-1"
-					>
-						<div class="font-semibold text-white sm:hidden">
-							{{ formatDayShort(day) }}
-						</div>
+          <div
+            v-for="day in days"
+            :key="dateKey(day)"
+            class="border-l border-neutral-700 text-center py-1"
+          >
+            <div class="font-semibold text-white sm:hidden">
+              {{ formatDayShort(day) }}
+            </div>
 
-						<div class="text-neutral-400 sm:hidden">
-							{{ day.getDate() }}
-						</div>
+            <div class="text-neutral-400 sm:hidden">
+              {{ day.getDate() }}
+            </div>
 
-						<div class="hidden font-semibold capitalize text-white sm:block">
-							{{ formatDay(day) }}
-						</div>
+            <div class="hidden font-semibold capitalize text-white sm:block">
+              {{ formatDay(day) }}
+            </div>
 
-						<div class="hidden text-sm text-neutral-400 sm:block">
-							{{ formatDate(day) }}
-						</div>
-					</div>
-				</div>
+            <div class="hidden text-sm text-neutral-400 sm:block">
+              {{ formatDate(day) }}
+            </div>
+          </div>
+        </div>
 
-				<div
-					ref="calendarBody"
-					class="grid grid-cols-[52px_repeat(5,minmax(0,1fr))] sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
-				>
-					<div ref="timeColumn">
-						<div
-							v-for="segment in segments"
-							:key="`${segment.type}-${segment.start}-${segment.end}`"
-							class="border-b border-neutral-700 text-neutral-400"
-							:class="{
+        <div
+          ref="calendarBody"
+          class="grid grid-cols-[52px_repeat(5,minmax(0,1fr))] sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
+        >
+          <div ref="timeColumn">
+            <div
+              v-for="segment in segments"
+              :key="`${segment.type}-${segment.start}-${segment.end}`"
+              class="border-b border-neutral-700 text-neutral-400"
+              :class="{
                 'bg-neutral-500/70':
                   segment.type === 'break',
               }"
-							:style="{
+              :style="{
                 height: `${getResponsiveSegmentHeight(segment)}px`,
               }"
-						>
-							<template v-if="segment.type === 'lesson'">
-								<div
-									class="flex h-full flex-col items-center justify-between py-1 leading-none"
-								>
+            >
+              <template v-if="segment.type === 'lesson'">
+                <div
+                  class="flex h-full flex-col items-center justify-between py-1 leading-none"
+                >
 									<span>
 										{{ segment.start }}
 									</span>
 
-									<span>
+                  <span>
 										{{ segment.end }}
 									</span>
-								</div>
-							</template>
-						</div>
-					</div>
+                </div>
+              </template>
+            </div>
+          </div>
 
-					<CalendarDay
-						v-for="day in days"
-						:key="dateKey(day)"
-						:date="day"
-						:events="getEventsForDay(day)"
-						:config="calendarConfig"
-						:segments="segments"
-						:get-segment-height="
+          <CalendarDay
+            v-for="day in days"
+            :key="dateKey(day)"
+            :date="day"
+            :events="getEventsForDay(day)"
+            :config="calendarConfig"
+            :segments="segments"
+            :get-segment-height="
               getResponsiveSegmentHeight
             "
-						:get-event-position="
+            :get-event-position="
               getResponsiveEventPosition
             "
-						:split-event-by-segments="
+            :split-event-by-segments="
               splitEventBySegments
             "
-					/>
-				</div>
-			</div>
-		</div>
-	</div>
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
