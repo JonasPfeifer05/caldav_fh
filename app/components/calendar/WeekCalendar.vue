@@ -191,7 +191,7 @@
 </script>
 
 <template>
-	<div class="flex flex-col overflow-hidden bg-[#242829]">
+	<div class="flex flex-col overflow-hidden bg-[#242829] h-dvh">
 		<div
 			class="flex items-center justify-between border-b border-neutral-700 px-2 py-1.5 sm:px-3 sm:py-2 max-h-[5vh]"
 		>
@@ -226,41 +226,39 @@
 				→
 			</button>
 		</div>
+		<div
+			class="bg-[#242829] grid grid-cols-[52px_repeat(5,minmax(0,1fr))] border-b border-neutral-700 sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
+		>
+			<div
+				class="flex items-center justify-center border-neutral-700 font-medium text-neutral-400"
+			>
+				{{ formatMonth(currentWeek) }}
+			</div>
 
-		<div class="overflow-x-auto overflow-y-auto max-h-[95vh]">
-			<div class="min-w-0 sm:min-w-262.5">
-				<div
-					class="sticky top-0 z-30 bg-[#242829] grid grid-cols-[52px_repeat(5,minmax(0,1fr))] border-b border-neutral-700 sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
-				>
-					<div
-						class="flex items-center justify-center border-neutral-700 font-medium text-neutral-400"
-					>
-						{{ formatMonth(currentWeek) }}
-					</div>
-
-					<div
-						v-for="day in days"
-						:key="dateKey(day)"
-						class="border-l border-neutral-700 text-center py-1"
-					>
-						<div class="font-semibold text-white sm:hidden">
-							{{ formatDayShort(day) }}
-						</div>
-
-						<div class="text-neutral-400 sm:hidden">
-							{{ day.getDate() }}
-						</div>
-
-						<div class="hidden font-semibold capitalize text-white sm:block">
-							{{ formatDay(day) }}
-						</div>
-
-						<div class="hidden text-sm text-neutral-400 sm:block">
-							{{ formatDate(day) }}
-						</div>
-					</div>
+			<div
+				v-for="day in days"
+				:key="dateKey(day)"
+				class="border-l border-neutral-700 text-center py-1"
+			>
+				<div class="font-semibold text-white sm:hidden">
+					{{ formatDayShort(day) }}
 				</div>
 
+				<div class="text-neutral-400 sm:hidden">
+					{{ day.getDate() }}
+				</div>
+
+				<div class="hidden font-semibold capitalize text-white sm:block">
+					{{ formatDay(day) }}
+				</div>
+
+				<div class="hidden text-sm text-neutral-400 sm:block">
+					{{ formatDate(day) }}
+				</div>
+			</div>
+		</div>
+		<div class="overflow-auto">
+			<div class="min-w-0 sm:min-w-262.5">
 				<div
 					ref="calendarBody"
 					class="grid grid-cols-[52px_repeat(5,minmax(0,1fr))] sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
