@@ -4,7 +4,7 @@ import { formatCalDavDate, parseICS } from "#server/utils/parse.ts";
 
 interface GetCalendarEventsOptions {
 	url: string;
-	user: string;
+	username: string;
 	password: string;
 	from: Date;
 	to: Date;
@@ -15,8 +15,11 @@ interface CalendarResponse {
 }
 
 export async function getCalendarEvents({
+	// biome-ignore lint/correctness/noUnusedFunctionParameters: <todo>
 	url,
-	user,
+	// biome-ignore lint/correctness/noUnusedFunctionParameters: <todo>
+	username,
+	// biome-ignore lint/correctness/noUnusedFunctionParameters: <todo>
 	password,
 	from,
 	to,
