@@ -10,7 +10,7 @@ services:
     environment:
       NODE_ENV: production
       URL: ${URL}
-      USER: ${CIS_USER}
-      PASSWORD: ${CIS_PASSWORD}
+      CIS_USER: ${CIS_USER}
+      CIS_PASSWORD: ${CIS_PASSWORD}
 
     restart: always
