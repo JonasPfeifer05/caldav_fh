@@ -82,7 +82,13 @@ export async function getCalendarEvents({
 		},
 	});
 
-	const responses = result[0]?.raw?.multistatus?.response ?? [];
+	const rawResponses = result[0]?.raw?.multistatus?.response;
+
+	const responses = rawResponses
+		? Array.isArray(rawResponses)
+			? rawResponses
+			: [rawResponses]
+		: [];
 
 	const events = await Promise.all(
 		responses.map(async (response: CalendarResponse) => {
