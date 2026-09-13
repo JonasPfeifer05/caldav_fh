@@ -22,18 +22,18 @@ export async function getCalendarEvents({
 	to,
 }: GetCalendarEventsOptions) {
 	const auth = Buffer.from(
-		`${process.env.USER}:${process.env.PASSWORD}`,
+		`${process.env.CIS_USER}:${process.env.CIS_PASSWORD}`,
 	).toString("base64");
 
-  console.log(process.env.PASSWORD)
-  console.log(process.env.USER)
+  console.log(process.env.CIS_PASSWORD)
+  console.log(process.env.CIS_USER)
   console.log(process.env.URL)
 
 	const client = await createDAVClient({
 		serverUrl: process.env.URL!,
 		credentials: {
-			username: process.env.USER,
-			password: process.env.PASSWORD,
+			username: process.env.CIS_USER,
+			password: process.env.CIS_PASSWORD,
 		},
 		authMethod: "Basic",
 		defaultAccountType: "caldav",
