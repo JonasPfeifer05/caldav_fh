@@ -133,12 +133,36 @@ export function useCalendar(config: CalendarConfig) {
 		);
 	};
 
-	const getTimePosition = (time: Date, segments: CalendarSegment[]) => {
-		const dayStart = timeToMinutes(segments[0]?.start ?? "");
+	const getTimePosition = (
+		time: Date,
+		segments: CalendarSegment[],
+		heightResolver: (segment: CalendarSegment) => number = getSegmentHeight,
+	) => {
 		const minutes = dateToMinutes(time);
 
+		let top = 0;
+
+		for (const segment of segments) {
+			const segmentStart = timeToMinutes(segment.start);
+			const segmentEnd = timeToMinutes(segment.end);
+			const segmentHeight = heightResolver(segment);
+
+			if (minutes >= segmentEnd) {
+				top += segmentHeight;
+				continue;
+			}
+
+			if (minutes >= segmentStart) {
+				const segmentDuration = segmentEnd - segmentStart;
+
+				top += ((minutes - segmentStart) / segmentDuration) * segmentHeight;
+			}
+
+			break;
+		}
+
 		return {
-			top: `${(minutes - dayStart) * pixelsPerMinute}px`,
+			top: `${top}px`,
 		};
 	};
 

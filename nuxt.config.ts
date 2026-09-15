@@ -9,10 +9,4 @@ export default defineNuxtConfig({
 	css: ["~/assets/css/main.css"],
 
 	compatibilityDate: "2026-06-30",
-
-	colorMode: {
-		preference: "light",
-		fallback: "light",
-		classSuffix: "",
-	},
 });

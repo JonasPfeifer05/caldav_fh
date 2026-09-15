@@ -26,8 +26,6 @@
 		) => Record<string, string>;
 	}>();
 
-	const now = useNow();
-
 	const selectedEvent = ref<CalendarEvent | null>(null);
 
 	const modalOpen = computed({
@@ -39,12 +37,10 @@
 		},
 	});
 
+	const now = useNow();
+
 	const isToday = computed(() => {
-		return (
-			now.value.getFullYear() === props.date.getFullYear() &&
-			now.value.getMonth() === props.date.getMonth() &&
-			now.value.getDate() === props.date.getDate()
-		);
+		return now.value.getDay() === props.date.getDay();
 	});
 
 	const displayEvents = computed(() =>
@@ -83,28 +79,31 @@
 		/>
 
 		<div
-			class="absolute z-30 h-1 w-full"
+			class="absolute w-full h-1 z-30"
 			:class="{
-				'bg-red-500/60': isToday,
-				'bg-neutral-700/60': !isToday,
-			}"
+					'bg-red-500/60': isToday,
+					'bg-neutral-700/60': !isToday
+				}"
 			:style="{
-				...getTimePostion(now, segments),
-			}"
+					...getTimePostion(now, segments),
+    }"
 		/>
 
 		<UModal
-			v-if="selectedEvent"
 			v-model:open="modalOpen"
-			:title="selectedEvent.title"
+			:title="selectedEvent?.title"
+			:ui="{
+				overlay: 'transition-opacity duration-200',
+				content: 'transition-all duration-200',
+			}"
 		>
 			<template #body>
-				<div v-if="selectedEvent.room">
+				<div v-if="selectedEvent?.room">
 					<strong>Raum:</strong>
 					{{ selectedEvent.room }}
 				</div>
 
-				<div v-if="selectedEvent.teacher">
+				<div v-if="selectedEvent?.teacher">
 					<strong>Lehrer:</strong>
 					{{ selectedEvent.teacher }}
 				</div>

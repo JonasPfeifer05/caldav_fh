@@ -165,6 +165,13 @@
 		return getEventPosition(start, end, segments, getResponsiveSegmentHeight);
 	};
 
+	const getResponsiveTimePosition = (
+		time: Date,
+		segments: CalendarSegment[],
+	) => {
+		return getTimePosition(time, segments, getResponsiveSegmentHeight);
+	};
+
 	onMounted(() => {
 		updateMobileState();
 		updateDayWidth();
@@ -309,7 +316,7 @@
 						:split-event-by-segments="
               splitEventBySegments
             "
-						:get-time-postion="getTimePosition"
+						:get-time-postion="getResponsiveTimePosition"
 					/>
 				</div>
 			</div>
