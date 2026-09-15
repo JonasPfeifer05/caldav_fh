@@ -7,6 +7,7 @@
 		generateSegments,
 		getSegmentHeight,
 		getEventPosition,
+		getTimePosition,
 		splitEventBySegments,
 	} = useCalendar(calendarConfig);
 
@@ -308,6 +309,7 @@
 						:split-event-by-segments="
               splitEventBySegments
             "
+						:get-time-postion="getTimePosition"
 					/>
 				</div>
 			</div>

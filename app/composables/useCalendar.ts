@@ -20,6 +20,10 @@ export function useCalendar(config: CalendarConfig) {
 		).padStart(2, "0")}`;
 	};
 
+	const dateToMinutes = (date: Date): number => {
+		return date.getMinutes() + date.getHours() * 60;
+	};
+
 	const generateSegments = (): CalendarSegment[] => {
 		const segments: CalendarSegment[] = [];
 
@@ -129,6 +133,15 @@ export function useCalendar(config: CalendarConfig) {
 		);
 	};
 
+	const getTimePosition = (time: Date, segments: CalendarSegment[]) => {
+		const dayStart = timeToMinutes(segments[0]?.start ?? "");
+		const minutes = dateToMinutes(time);
+
+		return {
+			top: `${(minutes - dayStart) * pixelsPerMinute}px`,
+		};
+	};
+
 	const getEventPosition = (
 		eventStart: string,
 		eventEnd: string,
@@ -203,5 +216,6 @@ export function useCalendar(config: CalendarConfig) {
 
 		getSegmentHeight,
 		getEventPosition,
+		getTimePosition,
 	};
 }
