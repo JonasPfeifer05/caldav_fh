@@ -20,7 +20,17 @@
 			event: CalendarEvent,
 			segments: CalendarSegment[],
 		) => CalendarEvent[];
+		getTimePostion: (
+			time: Date,
+			segments: CalendarSegment[],
+		) => Record<string, string>;
 	}>();
+
+	const now = useNow();
+
+	const isToday = computed(() => {
+		return now.value.getDay() === props.date.getDay();
+	});
 
 	const displayEvents = computed(() =>
 		props.events.flatMap((event) =>
@@ -55,6 +65,17 @@
           segments,
         )
       "
+		/>
+
+		<div
+			class="absolute w-full h-1 z-30"
+			:class="{
+			'bg-red-500/60': isToday,
+			'bg-neutral-700/60': !isToday
+		}"
+			:style="{
+			...getTimePostion(now, segments),
+    }"
 		/>
 	</div>
 </template>
