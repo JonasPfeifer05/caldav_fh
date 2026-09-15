@@ -28,8 +28,23 @@
 
 	const now = useNow();
 
+	const selectedEvent = ref<CalendarEvent | null>(null);
+
+	const modalOpen = computed({
+		get: () => selectedEvent.value !== null,
+		set: (open) => {
+			if (!open) {
+				selectedEvent.value = null;
+			}
+		},
+	});
+
 	const isToday = computed(() => {
-		return now.value.getDay() === props.date.getDay();
+		return (
+			now.value.getFullYear() === props.date.getFullYear() &&
+			now.value.getMonth() === props.date.getMonth() &&
+			now.value.getDate() === props.date.getDate()
+		);
 	});
 
 	const displayEvents = computed(() =>
@@ -46,12 +61,11 @@
 			:key="`${segment.type}-${segment.start}-${segment.end}`"
 			class="relative border-b border-neutral-700"
 			:class="{
-        'bg-neutral-500/70':
-          segment.type === 'break',
-      }"
+				'bg-neutral-500/70': segment.type === 'break',
+			}"
 			:style="{
-        height: `${getSegmentHeight(segment)}px`,
-      }"
+				height: `${getSegmentHeight(segment)}px`,
+			}"
 		/>
 
 		<CalendarEvent
@@ -59,23 +73,42 @@
 			:key="event.id"
 			:event="event"
 			:style="
-        getEventPosition(
-          event.start,
-          event.end,
-          segments,
-        )
-      "
+				getEventPosition(
+					event.start,
+					event.end,
+					segments,
+				)
+			"
+			@click="selectedEvent = event"
 		/>
 
 		<div
-			class="absolute w-full h-1 z-30"
+			class="absolute z-30 h-1 w-full"
 			:class="{
-			'bg-red-500/60': isToday,
-			'bg-neutral-700/60': !isToday
-		}"
+				'bg-red-500/60': isToday,
+				'bg-neutral-700/60': !isToday,
+			}"
 			:style="{
-			...getTimePostion(now, segments),
-    }"
+				...getTimePostion(now, segments),
+			}"
 		/>
+
+		<UModal
+			v-if="selectedEvent"
+			v-model:open="modalOpen"
+			:title="selectedEvent.title"
+		>
+			<template #body>
+				<div v-if="selectedEvent.room">
+					<strong>Raum:</strong>
+					{{ selectedEvent.room }}
+				</div>
+
+				<div v-if="selectedEvent.teacher">
+					<strong>Lehrer:</strong>
+					{{ selectedEvent.teacher }}
+				</div>
+			</template>
+		</UModal>
 	</div>
 </template>
