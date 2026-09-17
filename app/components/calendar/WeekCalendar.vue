@@ -199,7 +199,7 @@
 </script>
 
 <template>
-	<div class="flex flex-col overflow-hidden bg-[#242829] h-dvh">
+	<div class="flex flex-col overflow-hidden bg-neutral-800 h-dvh">
 		<div
 			class="flex items-center justify-between border-b border-neutral-700 px-2 py-1.5 sm:px-3 sm:py-2 max-h-[5vh]"
 		>
@@ -221,7 +221,7 @@
 					Lade Kalender...
 				</span>
 
-				<span v-if="error && !loading" class="text-xs text-red-400 sm:block">
+				<span v-if="error && !loading" class="text-xs text-red-500 sm:block">
 					Kalender konnte nicht geladen werden.
 				</span>
 			</div>
@@ -235,7 +235,7 @@
 			</button>
 		</div>
 		<div
-			class="bg-[#242829] grid grid-cols-[52px_repeat(5,minmax(0,1fr))] border-b border-neutral-700 sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
+			class="bg-neutral-800 grid grid-cols-[52px_repeat(5,minmax(0,1fr))] border-b border-neutral-700 sm:grid-cols-[70px_repeat(5,minmax(190px,1fr))]"
 		>
 			<div
 				class="flex items-center justify-center border-neutral-700 font-medium text-neutral-400"
