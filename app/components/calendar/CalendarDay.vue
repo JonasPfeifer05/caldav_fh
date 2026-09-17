@@ -35,19 +35,19 @@
 				selectedEvent.value = null;
 			}
 		},
-  });
+	});
 
 	const now = useNow();
 
 	const isToday = computed(() => {
-    const today = now.value;
-    const target = props.date;
+		const today = now.value;
+		const target = props.date;
 
-    return (
-        today.getFullYear() === target.getFullYear() &&
-        today.getMonth() === target.getMonth() &&
-        today.getDate() === target.getDate()
-    );
+		return (
+			today.getFullYear() === target.getFullYear() &&
+			today.getMonth() === target.getMonth() &&
+			today.getDate() === target.getDate()
+		);
 	});
 
 	const displayEvents = computed(() =>
