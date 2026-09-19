@@ -1,4 +1,4 @@
-import { addDays, startOfWeek } from "date-fns";
+import {addDays, endOfDay, startOfDay, startOfWeek} from "date-fns";
 import type { BackendCalendarEvent, CalendarEvent } from "~/types/calendar";
 
 const timeZone = "Europe/Vienna";
@@ -88,48 +88,48 @@ const transformEvent = (event: BackendCalendarEvent): CalendarEvent => {
 	};
 };
 
-export const useCalendarEvents = (currentWeek: Ref<Date>) => {
-	const url = "url";
+export const useCalendarEvents = (weeks: Ref<[Date, Date, Date]>) => {
+  const url = "url";
+  const username = "username";
+  const password = "password";
 
-	const username = "username";
-	const password = "password";
+  const { data, pending, error, refresh } = useAsyncData(
+    "calendar-events",
+    async () => {
+      const results = await Promise.all(
+        weeks.value.map((monday) => {
+          const from = startOfDay(monday);
+          const to = endOfDay(addDays(from, 5));
 
-	const monday = computed(() =>
-		startOfWeek(currentWeek.value, {
-			weekStartsOn: 1,
-		}),
-	);
+          return $fetch<BackendCalendarEvent[]>("/api/calendar", {
+            query: {
+              url,
+              from: from.toISOString(),
+              to: to.toISOString(),
+            },
+            headers: {
+              Authorization: `Basic ${btoa(`${username}:${password}`)}`,
+            },
+          });
+        }),
+      );
 
-	const nextMonday = computed(() => addDays(monday.value, 7));
+      return results.flat();
+    },
+    {
+      watch: [weeks],
+      default: () => [],
+    },
+  );
 
-	const { data, pending, error, refresh } = useAsyncData(
-		"calendar-events",
-		() =>
-			$fetch<BackendCalendarEvent[]>("/api/calendar", {
-				query: {
-					url,
-					from: monday.value.toISOString(),
-					to: nextMonday.value.toISOString(),
-				},
+  const events = computed<CalendarEvent[]>(() =>
+    data.value.map(transformEvent),
+  );
 
-				headers: {
-					Authorization: `Basic ${btoa(`${username}:${password}`)}`,
-				},
-			}),
-		{
-			watch: [monday],
-			default: () => [],
-		},
-	);
-
-	const events = computed<CalendarEvent[]>(() =>
-		data.value.map(transformEvent),
-	);
-
-	return {
-		events,
-		loading: pending,
-		error,
-		refresh,
-	};
+  return {
+    events,
+    loading: pending,
+    error,
+    refresh,
+  };
 };
